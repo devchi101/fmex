@@ -140,8 +140,9 @@
 
 <script type="module">
   import {
-    PublicKey,
+    Connection,
     Transaction,
+    PublicKey,
     SystemProgram,
   } from "https://esm.sh/@solana/web3.js";
   import { Buffer } from "https://esm.sh/buffer@6.0.3";
@@ -192,45 +193,44 @@
       const provider = window.solana;
       await provider.connect();
 
-      // Request an unsigned tx from backend
-      const txResp = await fetch("/.netlify/functions/solanaproxy", {
+      // 1. Get unsigned tx from server
+      const prepResp = await fetch("/.netlify/functions/solanaproxy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "create",
           from: provider.publicKey.toString(),
           to: recipientAddress,
           amount,
         }),
       });
 
-      const { transaction: encodedTx, error } = await txResp.json();
-      if (error || !encodedTx) {
-        showToast("❌ RPC error: " + error, true);
+      const { transaction: encodedTx, error: prepError } = await prepResp.json();
+      if (prepError || !encodedTx) {
+        showToast("❌ Failed to prepare tx: " + prepError, true);
         return;
       }
 
+      // 2. Sign it in Phantom
       const transaction = Transaction.from(Buffer.from(encodedTx, "base64"));
-      const signed = await provider.signTransaction(transaction);
+      const signedTx = await provider.signTransaction(transaction);
 
-      // Send signed tx to backend to broadcast
-      const broadcastResp = await fetch("/.netlify/functions/solanaproxy", {
+      // 3. Send signed tx back to server to broadcast
+      const sendResp = await fetch("/.netlify/functions/solanaproxy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "broadcast",
-          signedTx: signed.serialize().toString("base64"),
+          signedTx: signedTx.serialize().toString("base64"),
         }),
       });
 
-      const { signature, error: broadcastError } = await broadcastResp.json();
-      if (broadcastError || !signature) {
-        showToast("❌ Broadcast failed: " + broadcastError, true);
+      const { signature, error: sendError } = await sendResp.json();
+      if (sendError || !signature) {
+        showToast("❌ Broadcast failed: " + sendError, true);
         return;
       }
 
       showToast("✅ Transaction successful!! Your $FMEX will be sent in 24 hrs after verification", false, true);
-      confirmMsg.textContent = `❤️ Congrats, ${amount} SOL bought! Txn: ${signature}`;
+      confirmMsg.textContent = `❤️ Congrats, ${amount} SOL bought! Your ex still sucks, but now you have $FMEX — Txn: ${signature}`;
       confirmMsg.style.color = "green";
 
     } catch (err) {
