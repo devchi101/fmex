@@ -140,10 +140,8 @@
 
 <script type="module">
   import {
-    Connection,
-    Transaction,
     PublicKey,
-    SystemProgram,
+    Transaction,
   } from "https://esm.sh/@solana/web3.js";
   import { Buffer } from "https://esm.sh/buffer@6.0.3";
   window.Buffer = Buffer;
@@ -164,9 +162,7 @@
       const sound = document.getElementById("toast-sound");
       if (sound) {
         sound.currentTime = 0;
-        sound.play().catch(err => {
-          console.warn("Autoplay failed:", err.message);
-        });
+        sound.play().catch(err => console.warn("Sound error:", err.message));
       }
     }
 
@@ -180,8 +176,8 @@
     }
 
     const amount = parseFloat(solInput.value);
-    if (isNaN(amount) || amount < 0.02) {
-      showToast("Enter at least 0.02 SOL", true);
+    if (isNaN(amount) || amount < 0.05) {
+      showToast("Enter at least 0.05 SOL", true);
       return;
     }
 
@@ -193,8 +189,7 @@
       const provider = window.solana;
       await provider.connect();
 
-      // 1. Get unsigned tx from server
-      const prepResp = await fetch("/.netlify/functions/solanaproxy", {
+      const rpcResp = await fetch("/.netlify/functions/solanaproxy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -204,33 +199,33 @@
         }),
       });
 
-      const { transaction: encodedTx, error: prepError } = await prepResp.json();
-      if (prepError || !encodedTx) {
-        showToast("❌ Failed to prepare tx: " + prepError, true);
+      const { transaction: encodedTx, error } = await rpcResp.json();
+
+      if (error || !encodedTx) {
+        showToast("❌ RPC error: " + error, true);
         return;
       }
 
-      // 2. Sign it in Phantom
       const transaction = Transaction.from(Buffer.from(encodedTx, "base64"));
-      const signedTx = await provider.signTransaction(transaction);
+      const signed = await provider.signTransaction(transaction);
 
-      // 3. Send signed tx back to server to broadcast
-      const sendResp = await fetch("/.netlify/functions/solanaproxy", {
+      const broadcastResp = await fetch("/.netlify/functions/solanaproxy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          signedTx: signedTx.serialize().toString("base64"),
+          signedTx: Buffer.from(signed.serialize()).toString("base64"),
         }),
       });
 
-      const { signature, error: sendError } = await sendResp.json();
-      if (sendError || !signature) {
-        showToast("❌ Broadcast failed: " + sendError, true);
+      const { signature, error: broadcastError } = await broadcastResp.json();
+
+      if (broadcastError || !signature) {
+        showToast("❌ Broadcast error: " + broadcastError, true);
         return;
       }
 
-      showToast("✅ Transaction successful!! Your $FMEX will be sent in 24 hrs after verification", false, true);
-      confirmMsg.textContent = `❤️ Congrats, ${amount} SOL bought! Your ex still sucks, but now you have $FMEX — Txn: ${signature}`;
+      showToast("✅ Transaction successful! Your $FMEX will be sent within 24 hours", false, true);
+      confirmMsg.textContent = `❤️ ${amount} SOL sent! Txn: ${signature}`;
       confirmMsg.style.color = "green";
 
     } catch (err) {
