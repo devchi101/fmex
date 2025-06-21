@@ -4,10 +4,7 @@ const {
   Transaction,
   SystemProgram,
 } = require('@solana/web3.js');
-
-const QUICKNODE_RPC = process.env.QUICKNODE_RPC; // Ensure this is set in Netlify env vars
-
-const connection = new Connection(QUICKNODE_RPC, 'confirmed');
+require('dotenv').config();
 
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
@@ -18,49 +15,50 @@ exports.handler = async function (event) {
   }
 
   try {
-    const { from, to, amount, signedTx } = JSON.parse(event.body);
+    const body = JSON.parse(event.body);
+    const connection = new Connection(process.env.QUICKNODE_RPC, 'confirmed');
 
-    if (signedTx) {
-      // Broadcast path
-      const bufferTx = Buffer.from(signedTx, 'base64');
-      const transaction = Transaction.from(bufferTx);
-
-      const signature = await connection.sendRawTransaction(transaction.serialize());
-      await connection.confirmTransaction(signature, 'finalized');
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ signature }),
-      };
-    } else {
-      // Prepare transaction path
-      const fromPubkey = new PublicKey(from);
-      const toPubkey = new PublicKey(to);
-
-      const latest = await connection.getLatestBlockhash('finalized');
-
-      const transaction = new Transaction({
-        recentBlockhash: latest.blockhash,
-        feePayer: fromPubkey,
-      }).add(
-        SystemProgram.transfer({
-          fromPubkey,
-          toPubkey,
-          lamports: Math.round(amount * 1e9),
-        })
-      );
-
-      const serialized = transaction.serialize({
-        requireAllSignatures: false,
-      }).toString('base64');
+    // Step 1: Broadcast signed tx if provided
+    if (body.signedTx) {
+      const txBuffer = Buffer.from(body.signedTx, 'base64');
+      const txSignature = await connection.sendRawTransaction(txBuffer);
+      await connection.confirmTransaction(txSignature, 'finalized');
 
       return {
         statusCode: 200,
-        body: JSON.stringify({ transaction: serialized }),
+        body: JSON.stringify({ signature: txSignature }),
       };
     }
+
+    // Step 2: Prepare unsigned tx
+    const { from, to, amount } = body;
+    const fromPubkey = new PublicKey(from);
+    const toPubkey = new PublicKey(to);
+
+    const latest = await connection.getLatestBlockhash('finalized');
+
+    const transaction = new Transaction({
+      recentBlockhash: latest.blockhash,
+      feePayer: fromPubkey,
+    }).add(
+      SystemProgram.transfer({
+        fromPubkey,
+        toPubkey,
+        lamports: amount * 1e9,
+      })
+    );
+
+    const serializedTx = transaction.serialize({
+      requireAllSignatures: false,
+    }).toString('base64');
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ transaction: serializedTx }),
+    };
+
   } catch (err) {
-    console.error("❌ Solana proxy error:", err);
+    console.error("Solana proxy error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message }),
