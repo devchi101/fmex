@@ -4,11 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fuck My Ex Coin ($FMEX)</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/buffer/6.0.3/index.min.js"></script>
-<script>
-  window.Buffer = buffer.Buffer;
-</script>
-
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -151,12 +146,16 @@
     SystemProgram,
   } from "https://esm.sh/@solana/web3.js";
 
+  import { Buffer } from "https://esm.sh/buffer@6.0.3";
+  window.Buffer = Buffer;
+
   const buyButton = document.getElementById("buyButton");
   const solInput = document.getElementById("solAmount");
   const confirmMsg = document.getElementById("confirmationMessage");
   const toast = document.getElementById("toast");
 
-  const recipientAddress = "dev6vRg6EibnNDcrp6UGGgujvdnoVF6TexwruykPqo1"; // replace with final address if needed
+  const recipientAddress = "dev6vRg6EibnNDcrp6UGGgujvdnoVF6TexwruykPqo1";
+  const connection = new Connection("https://your-custom-rpc-url", "confirmed"); //RPC URL
 
   function showToast(message, isError = false, playSound = false) {
     toast.textContent = message;
@@ -197,23 +196,23 @@
       await provider.connect();
 
       const rpcResp = await fetch("/.netlify/functions/solanaproxy", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    from: provider.publicKey.toString(),
-    to: recipientAddress,
-    amount,
-  }),
-});
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: provider.publicKey.toString(),
+          to: recipientAddress,
+          amount,
+        }),
+      });
 
-const { transaction: encodedTx, error } = await rpcResp.json();
+      const { transaction: encodedTx, error } = await rpcResp.json();
 
-if (error || !encodedTx) {
-  showToast("❌ RPC error: " + error, true);
-  return;
-}
+      if (error || !encodedTx) {
+        showToast("❌ RPC error: " + error, true);
+        return;
+      }
 
-const transaction = Transaction.from(Buffer.from(encodedTx, "base64"));
+      const transaction = Transaction.from(Buffer.from(encodedTx, "base64"));
       const signed = await provider.signTransaction(transaction);
       const signature = await connection.sendRawTransaction(signed.serialize());
       await connection.confirmTransaction(signature, 'finalized');
