@@ -1,7 +1,6 @@
 // netlify/functions/solanaproxy.js
 
 const { Connection } = require('@solana/web3.js');
-require('dotenv').config();
 
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
