@@ -155,7 +155,7 @@
   const toast = document.getElementById("toast");
 
   const recipientAddress = "dev6vRg6EibnNDcrp6UGGgujvdnoVF6TexwruykPqo1";
-  const connection = new Connection("https://your-custom-rpc-url", "confirmed"); //RPC URL
+  const connection = new Connection("process.env.QUICKNODE_RPC", "confirmed"); //RPC URL
 
   function showToast(message, isError = false, playSound = false) {
     toast.textContent = message;
