@@ -139,37 +139,41 @@
 </script>
 
 <script type="module">
-  import {
-    PublicKey,
-    Transaction,
-  } from "https://esm.sh/@solana/web3.js";
-  import { Buffer } from "https://esm.sh/buffer@6.0.3";
-  window.Buffer = Buffer;
+import { Transaction } from "https://esm.sh/@solana/web3.js";
 
-  const buyButton = document.getElementById("buyButton");
-  const solInput = document.getElementById("solAmount");
-  const confirmMsg = document.getElementById("confirmationMessage");
-  const toast = document.getElementById("toast");
+const buyButton = document.getElementById("buy-button");
+const solInput = document.getElementById("sol-input");
+const confirmMsg = document.getElementById("confirm-msg");
+const recipientAddress = "YOUR_RECIPIENT_PUBLIC_KEY_HERE"; // Change this!
 
-  const recipientAddress = "dev6vRg6EibnNDcrp6UGGgujvdnoVF6TexwruykPqo1";
+function showToast(msg, isError = false, long = false) {
+  const toast = document.createElement("div");
+  toast.textContent = msg;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: ${isError ? "#ff4d4f" : "#4caf50"};
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 9999;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.style.opacity = 1, 10);
+  setTimeout(() => {
+    toast.style.opacity = 0;
+    setTimeout(() => document.body.removeChild(toast), 300);
+  }, long ? 5000 : 2500);
+}
 
-  function showToast(message, isError = false, playSound = false) {
-    toast.textContent = message;
-    toast.style.background = isError ? "#b00020" : "#222";
-    toast.classList.add("show");
-
-    if (playSound) {
-      const sound = document.getElementById("toast-sound");
-      if (sound) {
-        sound.currentTime = 0;
-        sound.play().catch(err => console.warn("Sound error:", err.message));
-      }
-    }
-
-    setTimeout(() => toast.classList.remove("show"), 7000);
-  }
-
-  buyButton.addEventListener("click", async () => {
+buyButton.addEventListener("click", async () => {
+  try {
     if (!window.solana?.isPhantom) {
       window.location.href = "https://phantom.app/ul/browse/" + encodeURIComponent(window.location.href);
       return;
@@ -181,63 +185,57 @@
       return;
     }
 
-    try {
-      buyButton.disabled = true;
-      buyButton.textContent = "⏳ Processing...";
-      confirmMsg.textContent = "";
+    buyButton.disabled = true;
+    buyButton.textContent = "⏳ Processing...";
+    confirmMsg.textContent = "";
 
-      const provider = window.solana;
-      await provider.connect();
+    const provider = window.solana;
+    await provider.connect();
 
-      const rpcResp = await fetch("/.netlify/functions/solanaproxy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          from: provider.publicKey.toString(),
-          to: recipientAddress,
-          amount,
-        }),
-      });
+    // 1. Get unsigned transaction from backend
+    const txResp = await fetch("/.netlify/functions/createTransaction", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: provider.publicKey.toString(),
+        to: recipientAddress,
+        amount,
+      }),
+    });
 
-      const { transaction: encodedTx, error } = await rpcResp.json();
+    const txData = await txResp.json();
+    if (!txData.transaction) throw new Error("Backend didn't return transaction: " + txData.error);
 
-      if (error || !encodedTx) {
-        showToast("❌ RPC error: " + error, true);
-        return;
-      }
+    const transaction = Transaction.from(Buffer.from(txData.transaction, "base64"));
 
-      const transaction = Transaction.from(Buffer.from(encodedTx, "base64"));
-      const signed = await provider.signTransaction(transaction);
+    // 2. Sign on frontend
+    const signed = await provider.signTransaction(transaction);
 
-      const broadcastResp = await fetch("/.netlify/functions/solanaproxy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          signedTx: Buffer.from(signed.serialize()).toString("base64"),
-        }),
-      });
+    // 3. Broadcast from backend
+    const broadcastResp = await fetch("/.netlify/functions/broadcast", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        signedTxBase64: Buffer.from(signed.serialize()).toString("base64"),
+      }),
+    });
 
-      const { signature, error: broadcastError } = await broadcastResp.json();
+    const { signature, error } = await broadcastResp.json();
+    if (error) throw new Error("Broadcast failed: " + error);
 
-      if (broadcastError || !signature) {
-        showToast("❌ Broadcast error: " + broadcastError, true);
-        return;
-      }
-
-      showToast("✅ Transaction successful! Your $FMEX will be sent within 24 hours", false, true);
-      confirmMsg.textContent = `❤️ ${amount} SOL sent! Txn: ${signature}`;
-      confirmMsg.style.color = "green";
-
-    } catch (err) {
-      console.error(err);
-      showToast("❌ " + err.message, true);
-      confirmMsg.textContent = `❌ Transaction failed: ${err.message}`;
-      confirmMsg.style.color = "red";
-    } finally {
-      buyButton.disabled = false;
-      buyButton.textContent = "Buy with SOL";
-    }
-  });
+    showToast("✅ Transaction successful!", false, true);
+    confirmMsg.textContent = `✅ ${amount} SOL sent! Txn: ${signature}`;
+    confirmMsg.style.color = "green";
+  } catch (err) {
+    console.error(err);
+    showToast("❌ " + err.message, true);
+    confirmMsg.textContent = "❌ " + err.message;
+    confirmMsg.style.color = "red";
+  } finally {
+    buyButton.disabled = false;
+    buyButton.textContent = "Buy with SOL";
+  }
+});
 </script>
 
 <script>
