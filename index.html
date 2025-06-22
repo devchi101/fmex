@@ -203,34 +203,38 @@ buyButton.addEventListener("click", async () => {
 
     const transaction = Transaction.from(Buffer.from(txData.transaction, "base64"));
 
-    // 2. Sign on frontend
     const signed = await provider.signTransaction(transaction);
 
-    // 3. Broadcast from backend
-    const broadcastResp = await fetch("/.netlify/functions/broadcast", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        signedTxBase64: Buffer.from(signed.serialize()).toString("base64"),
-      }),
-    });
+      const response = await fetch("/.netlify/functions/broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rawTx: Array.from(signed.serialize()) // Send raw bytes
+        }),
+      });
 
-    const { signature, error } = await broadcastResp.json();
-    if (error) throw new Error("Broadcast failed: " + error)
+      const { signature, error } = await response.json();
 
-    showToast("✅ Transaction successful! Your $FMEX will be sent in 24 hrs after verification", false, true);
-    confirmationMessage.textContent = `❤️ Congrats, ${amount} SOL bought! Your ex still sucks, but now you have $FMEX — Txn: ${signature}`;
-    confirmationMessage.style.color = "lime";
-  } catch (err) {
-    console.error(err);
-    showToast("❌ " + err.message, true);
-    confirmationMessage.textContent = "❌ " + err.message;
-    confirmationMessage.style.color = "red";
-  } finally {
-    buyButton.disabled = false;
-    buyButton.textContent = "Buy with SOL";
-  }
-});
+      if (error || !signature) {
+        showToast("❌ RPC Error: " + error, true);
+        confirmMsg.textContent = `❌ Broadcast failed`;
+        confirmMsg.style.color = "red";
+      } else {
+        showToast("✅ Transaction successful!", false, true);
+        confirmMsg.textContent = `❤️ Congrats! Txn Signature: ${signature}`;
+        confirmMsg.style.color = "green";
+      }
+
+    } catch (err) {
+      console.error(err);
+      showToast("❌ " + err.message, true);
+      confirmMsg.textContent = `❌ Transaction failed: ${err.message}`;
+      confirmMsg.style.color = "red";
+    } finally {
+      buyButton.disabled = false;
+      buyButton.textContent = "Buy with SOL";
+    }
+  });
 </script>
 
 <script>
