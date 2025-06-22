@@ -216,12 +216,14 @@ buyButton.addEventListener("click", async () => {
     });
 
     // Sig return
-const { signature, error } = await rpcResp.json();
+    const { signature, error } = await rpcResp.json();
 
-if (error || !signature) {
-  showToast("❌ RPC error: " + (error || "No signature returned"), true);
-  return;
-}
+     if (error || !signature) {
+     showToast("❌ RPC error: " + (error || "No signature returned"), true);
+     return;
+   }
+    const { signature, error } = await broadcastResp.json();
+    if (error) throw new Error("Broadcast failed: " + error)
 
     showToast("✅ Transaction successful! Your $FMEX will be sent in 24 hrs after verification", false, true);
     confirmationMessage.textContent = `❤️ Congrats, ${amount} SOL bought! Your ex still sucks, but now you have $FMEX — Txn: ${signature}`;
