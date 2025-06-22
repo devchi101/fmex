@@ -113,7 +113,7 @@ header p {
 }
 
 .Join-text {
-  color: purple; /* Text color */
+  color: rgb(237, 15, 137); /* Text color */
   font-family: 'Courier New', monospace; /* Font style */
   font-style: italic; /* Optional for italic text */
 }
