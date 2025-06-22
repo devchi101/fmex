@@ -115,7 +115,7 @@
     // ⏳ Countdown Timer
   window.addEventListener('DOMContentLoaded', () => {
     const countdownEl = document.getElementById('countdown');
-    const presaleEnd = new Date('2025-07-01T00:00:00');
+    const presaleEnd = new Date('2025-06-27T00:00:00');
 
     function updateCountdown() {
       const now = new Date().getTime();
@@ -220,7 +220,7 @@ buyButton.addEventListener("click", async () => {
     if (error) throw new Error("Broadcast failed: " + error)
 
     showToast("✅ Transaction successful! Your $FMEX will be sent in 24 hrs after verification", false, true);
-    confirmationMessage.textContent = `❤️ Congrats, ${amount} SOL bought! Your ex still sucks, but now you have $FMEX — Txn: ${signature}`;
+    confirmationMessage.textContent = `❤️ Congrats, ${amount} SOL bought! Your ex still sucks, but now you have $FMEX — Txn:`;
     confirmationMessage.style.color = "lime";
   } catch (err) {
     console.error(err);
