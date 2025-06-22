@@ -113,7 +113,7 @@ header p {
 }
 
 .Join-text {
-  color: rgb(237, 15, 137); /* Text color */
+  color: rgb (128, 0, 128); /* Text color */
   font-family: 'Courier New', monospace; /* Font style */
   font-style: italic; /* Optional for italic text */
 }
@@ -124,7 +124,7 @@ header p {
 
 .buy-form input {
   padding: 0.5rem;
-  font-size: 1rem;
+  font-size: 0.9rem;
   margin-bottom: 1rem;
   width: 200px;
   border-radius: 5px;
@@ -134,6 +134,7 @@ header p {
 .buy-form button {
   padding: 0.7rem 1.2rem;
   background: #e60073;
+  font-size: 1rem;
   color: white;
   border: none;
   border-radius: 8px;
