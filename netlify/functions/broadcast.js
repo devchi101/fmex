@@ -1,15 +1,27 @@
-const { Connection } = require('@solana/web3.js');
-const bs58 = require('bs58');
+const { Connection } = require("@solana/web3.js");
 
 exports.handler = async function (event) {
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      body: "Only POST allowed",
+    };
+  }
+
   try {
-    const { signedTxBase64 } = JSON.parse(event.body);
-    const connection = new Connection(process.env.QUICKNODE_RPC, 'confirmed');
+    const { rawTx } = JSON.parse(event.body);
+    if (!rawTx) throw new Error("Missing raw transaction");
 
-    const rawTx = Buffer.from(signedTxBase64, 'base64');
-    const signature = await connection.sendRawTransaction(signedTx.serialize());
-    await connection.confirmTransaction(signature, 'finalized');
+    const connection = new Connection(process.env.QUICKNODE_RPC, "confirmed");
 
+    const txBuffer = Buffer.from(rawTx); // rawTx is expected as array of bytes
+    const signature = await connection.sendRawTransaction(txBuffer);
+    await connection.confirmTransaction(signature, "finalized");
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ signature }),
+    };
   } catch (err) {
     console.error("Broadcast error:", err);
     return {
@@ -17,10 +29,4 @@ exports.handler = async function (event) {
       body: JSON.stringify({ error: err.message }),
     };
   }
-return {
-  statusCode: 200,
-  body: JSON.stringify({
-    success: true,
-    signature, // ✅ Include this
-  }),
 };
