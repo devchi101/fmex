@@ -23,7 +23,7 @@ window.addEventListener("load", async () => {
 
 
 // Set initial progress (e.g. 22,980.01 out of 50,000)
-const raised = 22980.01;
+const raised = 45000.01;
 const target = 50000;
 const progressPercent = (raised / target) * 100;
 
