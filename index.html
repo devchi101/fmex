@@ -215,13 +215,6 @@ buyButton.addEventListener("click", async () => {
       }),
     });
 
-    // Sig return
-    const { signature, error } = await rpcResp.json();
-
-     if (error || !signature) {
-     showToast("❌ RPC error: " + (error || "No signature returned"), true);
-     return;
-   }
     const { signature, error } = await broadcastResp.json();
     if (error) throw new Error("Broadcast failed: " + error)
 
