@@ -7,13 +7,9 @@ exports.handler = async function (event) {
     const connection = new Connection(process.env.QUICKNODE_RPC, 'confirmed');
 
     const rawTx = Buffer.from(signedTxBase64, 'base64');
-    const txId = await connection.sendRawTransaction(rawTx);
-    await connection.confirmTransaction(txId, 'finalized');
+    const signature = await connection.sendRawTransaction(signedTx.serialize());
+    await connection.confirmTransaction(signature, 'finalized');
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ signature: txId }),
-    };
   } catch (err) {
     console.error("Broadcast error:", err);
     return {
@@ -21,4 +17,10 @@ exports.handler = async function (event) {
       body: JSON.stringify({ error: err.message }),
     };
   }
+return {
+  statusCode: 200,
+  body: JSON.stringify({
+    success: true,
+    signature, // ✅ Include this
+  }),
 };
