@@ -72,9 +72,9 @@
       <p>You gave your ex years, give us 1 SOL</p>
       <p>Price: <strong>1 SOL = 800,000 FMEX | Listing Price: $0.0025</strong></p>
       <p id="countdown" style="font-size: 0.7rem;"></p>
-      <input id="sol-input" type="number" min="0.02" step="0.01" />
+      <input type="number" id="solAmount" placeholder="Enter SOL amount (min 0.02)" min="0.02" step="0.1" />
       <p id="fmexEstimate" style="margin-top: 0.5rem; font-weight: bold;"></p>
-      <button id="buy-button">Buy with SOL</button>
+      <button class="buy-button" id="buyButton"> <strong>Buy with SOL</strong></button>
       <p id="confirmationMessage" style="margin-top:1rem; color:green;"></p>
       <p class="status" id="status">💡 Connect Phantom wallet to continue.</p>
     </section>
@@ -141,9 +141,9 @@
 <script type="module">
 import { Transaction } from "https://esm.sh/@solana/web3.js";
 
-const buyButton = document.getElementById("buy-button");
-const solInput = document.getElementById("sol-input");
-const confirmMsg = document.getElementById("confirm-msg");
+const buyButton = document.getElementById("buyButton");
+const solInput = document.getElementById("solAmount");
+const confirmMsg = document.getElementById("confirmationMessage");
 const recipientAddress = "dev6vRg6EibnNDcrp6UGGgujvdnoVF6TexwruykPqo1"; // Address!
 
 function showToast(msg, isError = false, long = false) {
@@ -224,8 +224,8 @@ buyButton.addEventListener("click", async () => {
     if (error) throw new Error("Broadcast failed: " + error);
 
     showToast("✅ Transaction successful!", false, true);
-    confirmMsg.textContent = `✅ ${amount} SOL sent! Txn: ${signature}`;
-    confirmMsg.style.color = "green";
+    confirmationMessage.textContent = `✅ ${amount} SOL sent! Txn: ${signature}`;
+    confirmationMessage.style.color = "green";
   } catch (err) {
     console.error(err);
     showToast("❌ " + err.message, true);
