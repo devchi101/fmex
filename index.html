@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>💔Fuck My Ex Coin ($FMEX)</title>
+  <title>Fuck My Ex Coin ($FMEX)</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -175,7 +175,7 @@ function showToast(msg, isError = false, long = false, playSound = false) {
   }, long ? 5000 : 2500);
 }
 
-  if (playSound) {
+if (playSound) {
       const sound = document.getElementById("toast-sound");
       if (sound) {
         sound.currentTime = 0;
@@ -183,7 +183,7 @@ function showToast(msg, isError = false, long = false, playSound = false) {
           console.warn("Autoplay failed:", err.message);
         });
       }
-    }
+}
 
 buyButton.addEventListener("click", async () => {
   try {
