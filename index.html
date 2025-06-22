@@ -63,7 +63,7 @@
       <div class="card">
         <div class="icon">🔥</div>
         <h2>Roadmap</h2>
-        <p>Q1: Got dumped. Q2: Launched FMEX. Q3: Emotional rugs. Q4: Moon.</p>
+        <p>Q1: Got dumped. Q2: Launched FMEX. Q3: Emotional rugs. Q4: Moon!</p>
       </div>
     </section>
 
@@ -130,7 +130,7 @@
       const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const secs = Math.floor((distance % (1000 * 60)) / 1000);
 
-      countdownEl.textContent = `Presale ends in ${days}d ${hours}h ${mins}m ${secs}s`;
+      countdownEl.textContent = `Limited time only, before ur ex finds out ${days}d ${hours}h ${mins}m ${secs}s`;
     }
 
     updateCountdown();
@@ -215,8 +215,13 @@ buyButton.addEventListener("click", async () => {
       }),
     });
 
-    const { signature, error } = await broadcastResp.json();
-    if (error) throw new Error("Broadcast failed: " + error);
+    // Sig return
+const { signature, error } = await rpcResp.json();
+
+if (error || !signature) {
+  showToast("❌ RPC error: " + (error || "No signature returned"), true);
+  return;
+}
 
     showToast("✅ Transaction successful! Your $FMEX will be sent in 24 hrs after verification", false, true);
     confirmationMessage.textContent = `❤️ Congrats, ${amount} SOL bought! Your ex still sucks, but now you have $FMEX — Txn: ${signature}`;
