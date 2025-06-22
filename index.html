@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fuck My Ex Coin ($FMEX)</title>
+  <title>💔Fuck My Ex Coin ($FMEX)</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -149,7 +149,7 @@ const solInput = document.getElementById("solAmount");
 const confirmMsg = document.getElementById("confirmationMessage");
 const recipientAddress = "dev6vRg6EibnNDcrp6UGGgujvdnoVF6TexwruykPqo1"; // Address!
 
-function showToast(msg, isError = false, long = false) {
+function showToast(msg, isError = false, long = false, playSound = false) {
   const toast = document.createElement("div");
   toast.textContent = msg;
   toast.style.cssText = `
@@ -174,6 +174,16 @@ function showToast(msg, isError = false, long = false) {
     setTimeout(() => document.body.removeChild(toast), 300);
   }, long ? 5000 : 2500);
 }
+
+  if (playSound) {
+      const sound = document.getElementById("toast-sound");
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(err => {
+          console.warn("Autoplay failed:", err.message);
+        });
+      }
+    }
 
 buyButton.addEventListener("click", async () => {
   try {
@@ -226,14 +236,14 @@ buyButton.addEventListener("click", async () => {
     const { signature, error } = await broadcastResp.json();
     if (error) throw new Error("Broadcast failed: " + error);
 
-    showToast("✅ Transaction successful!", false, true);
-    confirmationMessage.textContent = `✅ ${amount} SOL sent! Txn: ${signature}`;
-    confirmationMessage.style.color = "green";
+    showToast("✅ Transaction successful! Your $FMEX will be sent in 24 hrs after verification", false, true);
+    confirmationMessage.textContent = `❤️ Congrats, ${amount} SOL bought! Your ex still sucks, but now you have $FMEX — Txn: ${signature}`;
+    confirmationMessage.style.color = "lime";
   } catch (err) {
     console.error(err);
     showToast("❌ " + err.message, true);
-    confirmMsg.textContent = "❌ " + err.message;
-    confirmMsg.style.color = "red";
+    confirmationMessage.textContent = "❌ " + err.message;
+    confirmationMessage.style.color = "red";
   } finally {
     buyButton.disabled = false;
     buyButton.textContent = "Buy with SOL";
