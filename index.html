@@ -149,33 +149,12 @@ const solInput = document.getElementById("solAmount");
 const confirmMsg = document.getElementById("confirmationMessage");
 const recipientAddress = "dev6vRg6EibnNDcrp6UGGgujvdnoVF6TexwruykPqo1"; // Address!
 
-function showToast(msg, isError = false, long = false, playSound = false) {
-  const toast = document.createElement("div");
-  toast.textContent = msg;
-  toast.style.cssText = `
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: ${isError ? "#ff4d4f" : "#4caf50"};
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    z-index: 9999;
-    font-size: 16px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  `;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.style.opacity = 1, 10);
-  setTimeout(() => {
-    toast.style.opacity = 0;
-    setTimeout(() => document.body.removeChild(toast), 300);
-  }, long ? 5000 : 2500);
-}
+function showToast(message, isError = false, playSound = false) {
+    toast.textContent = message;
+    toast.style.background = isError ? "#b00020" : "#222";
+    toast.classList.add("show");
 
-if (playSound) {
+    if (playSound) {
       const sound = document.getElementById("toast-sound");
       if (sound) {
         sound.currentTime = 0;
@@ -183,7 +162,10 @@ if (playSound) {
           console.warn("Autoplay failed:", err.message);
         });
       }
-}
+    }
+
+    setTimeout(() => toast.classList.remove("show"), 7000);
+  }
 
 buyButton.addEventListener("click", async () => {
   try {
