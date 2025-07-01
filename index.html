@@ -69,16 +69,33 @@
     </section>
 
     <section class="buy-form">
-      <h2 class="Join-text"> Join $FMEX Presale Now – Listing July 10th!</h2>
-      <p>You gave your ex years, give us 1 SOL</p>
-      <p>Price: <strong>$0.00018 | Listing Price: $0.0025</strong></p>
-      <p id="countdown" style="font-size: 0.7rem;"></p>
-      <input type="number" id="solAmount" placeholder="Enter SOL amount (min 1)" min="1" step="0.2" />
-      <p id="fmexEstimate" style="margin-top: 0.5rem; font-weight: bold;"></p>
-      <button class="buy-button" id="buyButton"> <strong>Buy with SOLANA</strong></button>
-      <p id="confirmationMessage" style="margin-top:1rem; color:green;"></p>
-      <p class="status" id="status">💡 Connect Phantom wallet to continue.</p>
-    </section>
+ <div class="fmex-card-glow">
+  <h2>💔 Join <span class="highlight">$FMEX</span> Presale Now</h2>
+  <p>🚀 Listing <strong>July 10th</strong> </p>
+  <div class="down-arrow">↓</div>
+  </div>
+  <div class="presale-announce">
+  <p class="fade-in punchline">You gave your ex years... give us 1 SOL</p>
+  <p class="fade-in delay-1 price-info">Presale Price: <strong>$0.00018</strong> | Listing: <strong>$0.0025</strong></p>
+  <p class="fade-in delay-2 countdown-line" id="countdown" style="font-size: 0.85rem;"></p>
+</div>
+    <input type="number" id="solAmount" placeholder="Enter SOL amount (min 1)" min="1" step="0.2" />
+    <p id="fmexEstimate" style="margin-top: 0.5rem; font-weight: bold;"></p>
+    <button id="buyButton" class="btn primary">Buy with SOLANA</button>
+
+    <!-- 💸 Solana Pay Option -->
+    <p style="margin:1.2rem 0; font-weight:bold; font-size:1rem; color:#ffd700; text-align:center;">
+      Don’t feel like connecting your wallet? Use <span style="color:#00e599;">Solana Pay</span>!</p>
+    <button id="solanaPayButton" class="btn secondary">🟣 Buy $FMEX with Solana Pay</button>
+
+    <div id="qr-container" style="margin-top:1rem; display:none; text-align:center;">
+      <p style="color:white; margin-bottom:0.5rem;">Scan QR with Phantom or any Solana wallet:</p>
+      <canvas id="solana-qr"></canvas>
+      <p><a id="solana-link" href="#" target="_blank" style="color:#00e599;">Or click to pay via Solana Pay ↗</a></p>
+    </div>
+
+    <p id="confirmationMessage" style="margin-top:1rem;"></p>
+  </section>
 
     <div id="phantom-mobile-hint" style="display:none; margin-top:1rem;">
   <p style="font-weight:bold; color:#b00020;">🚨 To connect your wallet on mobile, use the Phantom App:</p>
