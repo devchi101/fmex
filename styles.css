@@ -409,9 +409,21 @@ html {
   }
 }
 
+.solana-pay-text {
+  margin: 1.2rem 0;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #ffd700;
+  text-align: center;
+}
+
+.solana-highlight {
+  color: #00e599;
+}
+
+/* 🔽 Shrink text on mobile */
 @media (max-width: 480px) {
-  .solpaytext {
-    font-size: 0.8rem;
-    line-height: 1.4;
+  .solana-pay-text {
+    font-size: 0.9rem;
   }
 }
