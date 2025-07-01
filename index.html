@@ -88,7 +88,11 @@
       Don’t feel like connecting your wallet? Use <span style="color:#00e599;">Solana Pay</span>!</p>
     <button id="solanaPayButton" class="btn secondary">🟣 Buy $FMEX with Solana Pay</button>
 
-   
+    <div id="qr-container" style="margin-top:1rem; display:none; text-align:center;">
+      <p style="color:white; margin-bottom:0.5rem;">Scan QR with Phantom or any Solana wallet:</p>
+      <canvas id="solana-qr"></canvas>
+      <p><a id="solana-link" href="#" target="_blank" style="color:#00e599;">Or click to pay via Solana Pay ↗</a></p>
+    </div>
 
     <p id="confirmationMessage" style="margin-top:1rem;"></p>
   </section>
