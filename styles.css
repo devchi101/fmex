@@ -409,3 +409,9 @@ html {
   }
 }
 
+@media (max-width: 480px) {
+  .solpaytext {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+}
