@@ -79,7 +79,7 @@
   <p class="fade-in delay-1 price-info">Presale Price: <strong>$0.00018</strong> | Listing: <strong>$0.0025</strong></p>
   <p class="fade-in delay-2 countdown-line" id="countdown" style="font-size: 0.85rem;"></p>
 </div>
-    <input type="number" id="solAmount" placeholder="Enter SOL amount (min 1)" min="1" step="0.2" />
+    <input type="number" id="solAmount" placeholder="Enter SOL amount (minimum 1)" min="1" step="0.2" />
     <p id="fmexEstimate" style="margin-top: 0.5rem; font-weight: bold;"></p>
     <button id="buyButton" class="btn primary">Buy with SOLANA</button>
 
@@ -132,7 +132,7 @@
     // ⏳ Countdown Timer
   window.addEventListener('DOMContentLoaded', () => {
     const countdownEl = document.getElementById('countdown');
-    const presaleEnd = new Date('2025-07-01T00:00:00');
+    const presaleEnd = new Date('2025-07-05T09:00:00');
 
     function updateCountdown() {
       const now = new Date().getTime();
@@ -148,7 +148,7 @@
       const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const secs = Math.floor((distance % (1000 * 60)) / 1000);
 
-      countdownEl.textContent = `Presale ends in ${days}d ${hours}h ${mins}m ${secs}s`;
+      countdownEl.textContent = `Presale ends in ${days}d ${hours}h ${mins}m ${secs}s⏳`;
     }
 
     updateCountdown();
