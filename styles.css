@@ -399,3 +399,10 @@ html {
   }
 }
 
+@media (max-width: 480px) {
+  .buy-form {
+    width: 90%; 
+    margin: 0 auto;
+    display: block;
+  }
+}
