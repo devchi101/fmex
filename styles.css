@@ -400,9 +400,16 @@ html {
 }
 
 @media (max-width: 480px) {
-  .btn {
-    width: 90%; 
-    margin: 0 auto;
-    display: block;
+  #buyButton {
+    width: 95%;
+  }
+
+  #solanaPayButton {
+    width: 95%;
+  }
+
+  #solAmount {
+    width: 95%;
   }
 }
+
