@@ -112,38 +112,40 @@ header p {
   transform: scale(1.05);
 }
 
-.Join-text {
-  color: rgb(237, 15, 137); /* Text color */
-  font-family: 'Courier New', monospace; /* Font style */
-  font-style: italic; /* Optional for italic text */
-}
-
 .buy-form {
-  margin-top: 3rem;
+  margin-top: 2rem;
 }
 
 .buy-form input {
-  padding: 0.5rem;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-  width: 200px;
-  border-radius: 5px;
-  border: none;
+  width: 350px;
+  padding: 0.9rem;
+  border-radius: 12px;
+  background: #ffffff;
+  color: rgb(176, 5, 255);
+  border: 2px solid #7049bd;
+  font-weight: bold;
+  font-size: 1rem;
 }
 
 .buy-form button {
-  padding: 0.7rem 1.2rem;
-  background: #e60073;
-  font-size: 0.9rem;
-  color: white;
-  border: none;
+  padding: 0.9rem 1rem;
+  margin: 0.1rem;
+  width: 400px;
   border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background 0.3s;
+  border: none;
 }
 
-.buy-form button:hover {
-  background: #ff3385;
+.primary {
+  background: linear-gradient(135deg, #00e599, #9945FF);
+  color: white;
+}
+
+.secondary {
+  background: #9945FF;
+  color: white;
 }
 
 .status {
@@ -276,5 +278,124 @@ footer {
   width: calc(100% - 2rem);
   max-width: 300px;
   font-size: 0.9rem;
+}
+
+.fmex-card-glow {
+  background: linear-gradient(135deg, #1f1f1f, #2c2c2e);
+  border: 2px solid #ff2d55;
+  border-radius: 16px;
+  padding: 1.7rem;
+  margin: 2rem auto;
+  max-width: 500px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 45, 85, 0.5);
+  animation: float 6s ease-in-out infinite, glowPulse 2.5s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.fmex-card-glow:hover {
+  transform: scale(1.03);
+}
+
+.fmex-card-glow h2 {
+  font-size: 1.9rem;
+  margin-bottom: 0.7rem;
+}
+
+.fmex-card-glow p {
+  font-size: 1.1rem;
+  color: #e2e2e2;
+}
+
+.fmex-card-glow .highlight {
+  color: #00ffc3;
+  font-weight: bold;
+}
+
+.down-arrow {
+  font-size: 2rem;
+  margin-top: 1rem;
+  animation: bounce 1.2s infinite;
+  cursor: default;
+}
+
+/* Float and glow animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 45, 85, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(255, 45, 85, 0.8);
+  }
+}
+
+/* Arrow bounce animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.presale-announce {
+  text-align: center;
+  font-family: monospace, sans-serif;
+  margin: 2rem 0;
+  color: #fff;
+  line-height: 1.6;
+}
+
+.presale-announce p {
+  margin: 0.5rem 0;
+  font-weight: 500;
+}
+
+/* Minimal styling */
+.punchline {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ff4d6d;
+}
+
+.price-info {
+  font-size: 1rem;
+  color: #eaeaea;
+}
+
+/* Animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 1s forwards;
+}
+
+.fade-in.delay-1 {
+  animation-delay: 0.3s;
+}
+.fade-in.delay-2 {
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
