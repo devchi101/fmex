@@ -4,22 +4,6 @@ toggle.addEventListener('click', () => {
   toggle.textContent = document.body.classList.contains('light') ? '😈' : '🌙';
 });
 
-// Phantom Wallet integration
-let provider = null;
-window.addEventListener("load", async () => {
-  if (window.solana && window.solana.isPhantom) {
-    provider = window.solana;
-    try {
-      await provider.connect();
-      document.getElementById("status").textContent = `✅ Connected: ${provider.publicKey.toString()}`;
-    } catch {
-      document.getElementById("status").textContent = "❌ Connection rejected.";
-    }
-  } else {
-    document.getElementById("status").textContent = "🚫 Please install the Phantom wallet.";
-  }
-});
-
 
 
 // Set initial progress (e.g. 22,980.01 out of 50,000)
