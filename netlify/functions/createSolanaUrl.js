@@ -1,8 +1,8 @@
 // /netlify/functions/createSolanaUrl.js
-import { Connection, PublicKey, clusterApiUrl } from "@solana/web3.js";
-import { createQR, encodeURL } from "@solana/pay";
-import { NextResponse } from "@netlify/functions";
+import { PublicKey } from "@solana/web3.js";
+import { encodeURL } from "@solana/pay";
 
+// Replace with your actual wallet
 const recipient = new PublicKey("dev6vRg6EibnNDcrp6UGGgujvdnoVF6TexwruykPqo1");
 
 export async function handler(event) {
@@ -10,10 +10,17 @@ export async function handler(event) {
     const { amount } = JSON.parse(event.body || "{}");
 
     if (!amount || isNaN(amount)) {
-      return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Invalid amount" }),
+      };
     }
 
-    const reference = new PublicKey(require("crypto").randomBytes(32).toString("hex").slice(0, 32));
+    // Create a 32-byte random public key reference
+    const reference = new PublicKey(
+      Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("hex")
+    );
+
     const url = encodeURL({
       recipient,
       amount,
@@ -22,8 +29,14 @@ export async function handler(event) {
       message: "Thanks for your emotional investment!",
     });
 
-    return NextResponse.json({ url: url.toString() });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ url: url.toString() }),
+    };
   } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message }),
+    };
   }
 }
