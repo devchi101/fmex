@@ -186,6 +186,47 @@ buyButton.addEventListener("click", async () => {
       return;
     }
 
+    import { createQR } from "https://esm.sh/@solana/pay";
+import { PublicKey } from "https://esm.sh/@solana/web3.js";
+
+// Solana Pay button logic
+const solanaPayBtn = document.getElementById("solanaPayButton");
+const qrContainer = document.getElementById("qr-container");
+const qrCanvas = document.getElementById("solana-qr");
+const solanaLink = document.getElementById("solana-link");
+
+solanaPayBtn.addEventListener("click", async () => {
+  const amount = parseFloat(solInput.value);
+  if (isNaN(amount) || amount < 1) {
+    showToast("⚠️ Enter at least 1 SOL to use Solana Pay", true);
+    return;
+  }
+
+  try {
+    // Call your Netlify backend to get a Solana Pay URL
+    const response = await fetch("/.netlify/functions/solanaPayURL", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount })
+    });
+
+    const data = await response.json();
+    if (!data.url) throw new Error("Failed to generate Solana Pay URL");
+
+    const url = new URL(data.url);
+    solanaLink.href = url.toString();
+
+    const qr = createQR(url, 300, 'white');
+    qrContainer.style.display = "block";
+    qrCanvas.innerHTML = "";
+    qr.append(qrCanvas);
+    showToast("✅ Scan QR to complete payment", false, true);
+  } catch (err) {
+    console.error(err);
+    showToast("❌ " + err.message, true);
+  }
+});
+
     const amount = parseFloat(solInput.value);
     if (isNaN(amount) || amount < 1) {
       showToast("Enter at least 1 SOL", true);
