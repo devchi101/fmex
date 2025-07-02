@@ -151,34 +151,39 @@
 </script>
 
 <script type="module">
-import { Transaction } from "https://esm.sh/@solana/web3.js";
-
+import { Transaction, PublicKey } from "https://esm.sh/@solana/web3.js";
 import { Buffer } from "https://esm.sh/buffer@6.0.3";
+import { createQR } from "https://esm.sh/@solana/pay";
+
 window.Buffer = Buffer;
 
 const buyButton = document.getElementById("buyButton");
+const solanaPayBtn = document.getElementById("solanaPayButton");
 const solInput = document.getElementById("solAmount");
 const confirmMsg = document.getElementById("confirmationMessage");
-const recipientAddress = "dev6vRg6EibnNDcrp6UGGgujvdnoVF6TexwruykPqo1"; // Address!
+const toast = document.getElementById("toast");
+const qrContainer = document.getElementById("qr-container");
+const qrCanvas = document.getElementById("solana-qr");
+const solanaLink = document.getElementById("solana-link");
+const recipientAddress = "dev6vRg6EibnNDcrp6UGGgujvdnoVF6TexwruykPqo1";
 
 function showToast(message, isError = false, playSound = false) {
-    toast.textContent = message;
-    toast.style.background = isError ? "#b00020" : "#222";
-    toast.classList.add("show");
+  toast.textContent = message;
+  toast.style.background = isError ? "#b00020" : "#222";
+  toast.classList.add("show");
 
-    if (playSound) {
-      const sound = document.getElementById("toast-sound");
-      if (sound) {
-        sound.currentTime = 0;
-        sound.play().catch(err => {
-          console.warn("Autoplay failed:", err.message);
-        });
-      }
+  if (playSound) {
+    const sound = document.getElementById("toast-sound");
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play().catch(err => console.warn("Autoplay failed:", err));
     }
-
-    setTimeout(() => toast.classList.remove("show"), 7000);
   }
 
+  setTimeout(() => toast.classList.remove("show"), 6000);
+}
+
+// 🔘 Phantom Buy Button
 buyButton.addEventListener("click", async () => {
   try {
     if (!window.solana?.isPhantom) {
@@ -199,95 +204,73 @@ buyButton.addEventListener("click", async () => {
     const provider = window.solana;
     await provider.connect();
 
-    // 1. Get unsigned transaction from backend
     const txResp = await fetch("/.netlify/functions/createTransaction", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: provider.publicKey.toString(),
-        to: recipientAddress,
-        amount,
-      }),
+      body: JSON.stringify({ from: provider.publicKey.toString(), to: recipientAddress, amount }),
     });
 
     const txData = await txResp.json();
-    if (!txData.transaction) throw new Error("Backend didn't return transaction: " + txData.error);
+    if (!txData.transaction) throw new Error("No transaction from backend");
 
     const transaction = Transaction.from(Buffer.from(txData.transaction, "base64"));
-
-    // 2. Sign on frontend
     const signed = await provider.signTransaction(transaction);
 
-    // 3. Broadcast from backend
     const broadcastResp = await fetch("/.netlify/functions/broadcast", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        signedTxBase64: Buffer.from(signed.serialize()).toString("base64"),
-      }),
+      body: JSON.stringify({ signedTxBase64: Buffer.from(signed.serialize()).toString("base64") }),
     });
 
     const { signature, error } = await broadcastResp.json();
-    if (error) throw new Error("Broadcast failed: " + error)
+    if (error) throw new Error("Broadcast failed: " + error);
 
-    showToast("✅ Transaction successful! Your $FMEX will be sent in 24 hrs after verification", false, true);
-    confirmationMessage.textContent = `❤️ Congrats, ${amount} SOL bought! Your ex still sucks, but now you have $FMEX — Txn:`;
-    confirmationMessage.style.color = "lime";
+    showToast("✅ Transaction successful! Your $FMEX will arrive after verification.", false, true);
+    confirmMsg.textContent = `❤️ Bought ${amount} SOL! Your ex still sucks, but now you have $FMEX.`;
+    confirmMsg.style.color = "lime";
   } catch (err) {
     console.error(err);
     showToast("❌ " + err.message, true);
-    confirmationMessage.textContent = "❌ " + err.message;
-    confirmationMessage.style.color = "red";
+    confirmMsg.textContent = "❌ " + err.message;
+    confirmMsg.style.color = "red";
   } finally {
     buyButton.disabled = false;
-    buyButton.textContent = "Buy with SOL";
+    buyButton.textContent = "Buy with SOLANA";
   }
 });
-</script>
 
-<script type="module">
-  import QRCode from "https://cdn.skypack.dev/qrcode";
+// 🔘 Solana Pay QR Logic
+solanaPayBtn.addEventListener("click", async () => {
+  const amount = parseFloat(solInput.value);
+  if (isNaN(amount) || amount < 1) {
+    showToast("⚠️ Enter at least 1 SOL to use Solana Pay", true);
+    return;
+  }
 
-  const solanaPayButton = document.getElementById("solanaPayButton");
-  const qrContainer = document.getElementById("qr-container");
+  try {
+    const response = await fetch("/.netlify/functions/solanaPayURL", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount })
+    });
 
-  solanaPayButton.addEventListener("click", async () => {
-    try {
-      const amount = parseFloat(document.getElementById("solAmount").value);
-      if (isNaN(amount) || amount < 1) {
-        showToast("Enter at least 1 SOL", true);
-        return;
-      }
+    const data = await response.json();
+    if (!data.url) throw new Error("Failed to generate Solana Pay URL");
 
-      solanaPayButton.disabled = true;
-      solanaPayButton.textContent = "⏳ Generating QR...";
+    const url = new URL(data.url);
+    solanaLink.href = url.toString();
 
-      const res = await fetch("/.netlify/functions/createSolanaUrl", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }),
-      });
+    const qr = createQR(url, 300, 'white');
+    qrCanvas.innerHTML = "";
+    qrContainer.style.display = "block";
+    qr.append(qrCanvas);
 
-      const data = await res.json();
-      if (!data.url) throw new Error("No URL returned");
-
-      // Show QR
-      qrContainer.style.display = "block";
-      qrContainer.innerHTML = ""; // Clear previous
-      QRCode.toCanvas(data.url, { width: 240 }, (err, canvas) => {
-        if (err) throw err;
-        qrContainer.appendChild(canvas);
-      });
-
-      showToast("✅ Scan the QR with your wallet!", false, true);
-    } catch (err) {
-      console.error(err);
-      showToast("❌ " + err.message, true);
-    } finally {
-      solanaPayButton.disabled = false;
-      solanaPayButton.textContent = "Pay with Solana Pay (QR)";
-    }
-  });
+    showToast("✅ Scan QR to pay with Solana Pay", false, true);
+  } catch (err) {
+    console.error(err);
+    showToast("❌ " + err.message, true);
+  }
+});
 </script>
 
 
