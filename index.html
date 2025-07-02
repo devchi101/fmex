@@ -245,6 +245,52 @@ buyButton.addEventListener("click", async () => {
 });
 </script>
 
+<script type="module">
+  import QRCode from "https://cdn.skypack.dev/qrcode";
+
+  const solanaPayButton = document.getElementById("solanaPayButton");
+  const qrContainer = document.getElementById("qr-container");
+
+  solanaPayButton.addEventListener("click", async () => {
+    try {
+      const amount = parseFloat(document.getElementById("solAmount").value);
+      if (isNaN(amount) || amount < 1) {
+        showToast("Enter at least 1 SOL", true);
+        return;
+      }
+
+      solanaPayButton.disabled = true;
+      solanaPayButton.textContent = "⏳ Generating QR...";
+
+      const res = await fetch("/.netlify/functions/createSolanaUrl", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount }),
+      });
+
+      const data = await res.json();
+      if (!data.url) throw new Error("No URL returned");
+
+      // Show QR
+      qrContainer.style.display = "block";
+      qrContainer.innerHTML = ""; // Clear previous
+      QRCode.toCanvas(data.url, { width: 240 }, (err, canvas) => {
+        if (err) throw err;
+        qrContainer.appendChild(canvas);
+      });
+
+      showToast("✅ Scan the QR with your wallet!", false, true);
+    } catch (err) {
+      console.error(err);
+      showToast("❌ " + err.message, true);
+    } finally {
+      solanaPayButton.disabled = false;
+      solanaPayButton.textContent = "Pay with Solana Pay (QR)";
+    }
+  });
+</script>
+
+
 <script>
   function isMobile() {
     return /Mobi|Android|iPhone/i.test(navigator.userAgent);
