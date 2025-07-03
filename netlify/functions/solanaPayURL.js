@@ -1,12 +1,15 @@
 // netlify/functions/solanaPayURL.js
 import { PublicKey } from "@solana/web3.js";
 
-export default async (req, res) => {
+export async function handler(event, context) {
   try {
-    const { amount } = req.body; // ✅ NO JSON.parse here
+    const { amount } = JSON.parse(event.body);
 
     if (!amount || isNaN(amount) || amount < 1) {
-      return res.status(400).json({ error: "Invalid amount" });
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Invalid amount" }),
+      };
     }
 
     const recipient = new PublicKey("dev6vRg6EibnNDcrp6UGGgujvdnoVF6TexwruykPqo1");
@@ -22,9 +25,15 @@ export default async (req, res) => {
 
     const fullUrl = `${baseUrl}?${params.toString()}`;
 
-    return res.status(200).json({ url: fullUrl });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ url: fullUrl }),
+    };
   } catch (error) {
     console.error("❌ URL generation error:", error);
-    return res.status(500).json({ error: "Failed to generate URL" });
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Failed to generate Solana Pay URL" }),
+    };
   }
-};
+}
