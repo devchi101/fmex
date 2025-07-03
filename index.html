@@ -233,36 +233,25 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ amount })
       });
 
-      const url = new URL(data.url);
-solanaLink.href = url.toString();
+      const { url } = await response.json();
+      if (!url) throw new Error("No URL returned from backend");
 
-const isMobile = /iPhone|Android|iPad|iPod/i.test(navigator.userAgent);
-if (isMobile) {
-  const phantomDeepLink = `https://phantom.app/ul/v1/pay?url=${encodeURIComponent(url.toString())}`;
-  window.location.href = phantomDeepLink;
-  return;
-}
+      solanaLink.href = url;
+      qrContainer.style.display = "block";
+      qrCanvas.innerHTML = "";
+      qrContainer.classList.add("show");
+      qrContainer.classList.remove("show");
 
-// Desktop fallback
-qrCanvas.innerHTML = "";
-qrContainer.classList.add("show");
+      const canvas = document.createElement("canvas");
+      await QRCode.toCanvas(canvas, url, { width: 300 });
+      qrCanvas.appendChild(canvas);
+      showToast("💘 Scan QR to complete payment", false, true);
 
-QRCode.toCanvas(document.createElement("canvas"), url.toString(), {
-  width: 300,
-  color: {
-    dark: "#000",
-    light: "#fff"
-  }
-}, function (err, canvas) {
-  if (err) {
-    console.error("QR render error:", err);
-    showToast("❌ Failed to render QR code", true);
-    return;
-  }
-
-  qrCanvas.appendChild(canvas);
-  showToast("✅ Scan QR to complete payment", false, true);
-});
+    } catch (err) {
+      console.error(err);
+      showToast("❌ " + err.message, true);
+    }
+  });
 
   buyButton.addEventListener("click", async () => {
     try {
