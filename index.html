@@ -233,10 +233,10 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ amount })
       });
 
-      const { url } = await response.json();
-      if (!url) throw new Error("No URL returned from backend");
-
-      solanaLink.href = url;
+      const url = new URL(data.url);
+      const phantomDeepLink = `https://phantom.app/ul/v1/pay?url=${encodeURIComponent(url.toString())}`;
+      solanaLink.href = phantomDeepLink;
+      
       qrContainer.style.display = "block";
       qrCanvas.innerHTML = "";
 
