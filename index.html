@@ -89,7 +89,7 @@
 
     <div id="qr-container" style="margin-top:1rem; display:none; text-align:center;">
       <p style="color:white; margin-bottom:0.5rem;">Scan QR with Phantom or any Solana wallet:</p>
-      <canvas id="solana-qr"></canvas>
+      <div id="solana-qr" style="display:inline-block;"></div>
       <p><a id="solana-link" href="#" target="_blank" style="color:#00e599;">Or click to pay via Solana Pay ↗</a></p>
     </div>
 
@@ -217,8 +217,8 @@ if (!data.url) throw new Error("Failed to generate Solana Pay URL");
 
       const qr = createQR(url, 300, 'white');
       qrContainer.style.display = "block";
-      qrCanvas.innerHTML = "";
-      qr.append(qrCanvas);
+      qrCanvas.innerHTML = "";           // ✅ clear container
+      qrCanvas.appendChild(qr);         // ✅ append QR div into wrapper
       showToast("✅ Scan QR to complete payment", false, true);
     } catch (err) {
       console.error(err);
