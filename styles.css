@@ -433,3 +433,27 @@ html {
   opacity: 0;
   transition: opacity 0.5s ease;
 }
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #666;
+  font-family: Arial, sans-serif;
+  margin: 20px 0;
+}
+
+.or-divider::before,
+.or-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+}
+
+.or-divider::before {
+  margin-right: 10px;
+}
+
+.or-divider::after {
+  margin-left: 10px;
+}
