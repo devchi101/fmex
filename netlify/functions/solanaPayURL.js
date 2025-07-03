@@ -3,7 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 
 export default async (req, res) => {
   try {
-    const { amount } = JSON.parse(req.body);
+    const { amount } = req.body; // ✅ NO JSON.parse here
 
     if (!amount || isNaN(amount) || amount < 1) {
       return res.status(400).json({ error: "Invalid amount" });
@@ -22,11 +22,9 @@ export default async (req, res) => {
 
     const fullUrl = `${baseUrl}?${params.toString()}`;
 
-    console.log("Generated Solana Pay URL:", fullUrl); // ✅ LOG HERE
-
     return res.status(200).json({ url: fullUrl });
   } catch (error) {
-    console.error("URL generation error:", error); // ✅ Catch & log error
+    console.error("❌ URL generation error:", error);
     return res.status(500).json({ error: "Failed to generate URL" });
   }
 };
