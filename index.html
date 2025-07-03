@@ -88,9 +88,9 @@
     <button id="solanaPayButton" class="btn secondary">🟣 Buy $FMEX with Solana Pay</button>
 
     <div id="qr-container" style="margin-top:1rem; display:none; text-align:center;">
-      <p style="color:white; margin-bottom:0.5rem;">Scan QR with Phantom or any Solana wallet:</p>
+      <p style="color:white; margin-bottom:0.5rem;">Scan QR with Phantom or any Solana wallet to pay:</p>
       <div id="solana-qr" style="display:inline-block;"></div>
-      <p><a id="solana-link" href="#" target="_blank" style="color:#00e599;">Or click to pay via Solana Pay ↗</a></p>
+      <p><a id="solana-link" href="#" target="_blank" style="color:#00e599;">Or click to pay on mobile ↗</a></p>
     </div>
 
     <p id="confirmationMessage" style="margin-top:1rem;"></p>
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
       qrContainer.style.opacity = 1;
     });
 
-    showToast("💘 Scan QR or tap the link to pay with Phantom", false, true);
+    showToast("💘 Scan QR or tap the link to pay on mobile", false, true);
   } catch (err) {
     console.error(err);
     showToast("❌ " + err.message, true);
