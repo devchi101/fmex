@@ -237,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!url) throw new Error("No URL returned from backend");
 
     // ✅ Use Phantom deep link
-    const phantomDeepLink = `https://phantom.app/ul/v1/pay?url=${encodeURIComponent(url)}`;
+    const phantomDeepLink = `solana:${encodeURIComponent(url.toString())}`;
     solanaLink.href = phantomDeepLink;
 
     // ✅ Show animated QR container
