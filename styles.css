@@ -428,3 +428,8 @@ html {
     line-height: 1.7;
   }
 }
+
+#qr-container {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
