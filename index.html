@@ -154,6 +154,7 @@
   import { Transaction, PublicKey } from "https://esm.sh/@solana/web3.js";
   import { createQR } from "https://esm.sh/@solana/pay";
   import { Buffer } from "https://esm.sh/buffer@6.0.3";
+  import QRCode from "https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js";
   window.Buffer = Buffer;
 
   const buyButton = document.getElementById("buyButton");
@@ -187,46 +188,60 @@
 
   // ✅ Solana Pay button
   solanaPayBtn.addEventListener("click", async () => {
-    const amount = parseFloat(solInput.value);
-    if (isNaN(amount) || amount < 1) {
-      showToast("⚠️ Enter at least 1 SOL to use Solana Pay", true);
-      return;
+  const amount = parseFloat(solInput.value);
+  if (isNaN(amount) || amount < 1) {
+    showToast("⚠️ Enter at least 1 SOL to use Solana Pay", true);
+    return;
+  }
+
+  try {
+    const response = await fetch("/.netlify/functions/solanaPayURL", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount })
+    });
+
+    const text = await response.text();
+    console.log("Raw response text:", text);
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (parseError) {
+      throw new Error("Failed to parse response JSON: " + parseError.message);
     }
 
-    try {
-      const response = await fetch("/.netlify/functions/solanaPayURL", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ amount })
+    if (!data.url) throw new Error("Failed to generate Solana Pay URL");
+
+    const url = new URL(data.url);
+    solanaLink.href = url.toString();
+
+    qrContainer.style.display = "block";
+    qrCanvas.innerHTML = "";
+
+    QRCode.toCanvas(document.createElement("canvas"), url.toString(), {
+      width: 300,
+      color: {
+        dark: "#000",
+        light: "#fff"
+      }
+    }, function (err, canvas) {
+      if (err) {
+        console.error("QR render error:", err);
+        showToast("❌ Failed to render QR code", true);
+        return;
+      }
+
+      qrCanvas.appendChild(canvas);
+      showToast("✅ Scan QR to complete payment", false, true);
+    });
+
+  } catch (err) {
+    console.error(err);
+    showToast("❌ " + err.message, true);
+  }
 });
 
-const text = await response.text();
-console.log("Raw response text:", text);
-
-let data;
-try {
-  data = JSON.parse(text);
-} catch (parseError) {
-  throw new Error("Failed to parse response JSON: " + parseError.message);
-}
-
-if (!data.url) throw new Error("Failed to generate Solana Pay URL");
-
-      const url = new URL(data.url);
-      solanaLink.href = url.toString();
-
-      const qr = createQR(url, 300, 'white');
-qrContainer.style.display = "block";
-qrCanvas.innerHTML = "";                  // Clear container
-qr.getElement().style.width = "300px";    // Optional: force width
-qrCanvas.appendChild(qr.getElement());    // ✅ This is an actual DOM Node
-
-      showToast("✅ Scan QR to complete payment", false, true);
-    } catch (err) {
-      console.error(err);
-      showToast("❌ " + err.message, true);
-    }
-  });
 
   // ✅ Phantom Buy Button
   buyButton.addEventListener("click", async () => {
