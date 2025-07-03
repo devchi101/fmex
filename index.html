@@ -220,36 +220,45 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   solanaPayBtn.addEventListener("click", async () => {
-    const amount = parseFloat(solInput.value);
-    if (isNaN(amount) || amount < 1) {
-      showToast("⚠️ Enter at least 1 SOL to use Solana Pay", true);
-      return;
-    }
+  const amount = parseFloat(solInput.value);
+  if (isNaN(amount) || amount < 1) {
+    showToast("⚠️ Enter at least 1 SOL to use Solana Pay", true);
+    return;
+  }
 
-    try {
-      const response = await fetch("/.netlify/functions/solanaPayURL", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount })
-      });
+  try {
+    const response = await fetch("/.netlify/functions/solanaPayURL", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount })
+    });
 
-      const url = new URL(data.url);
-      const phantomDeepLink = `https://phantom.app/ul/v1/pay?url=${encodeURIComponent(url.toString())}`;
-      solanaLink.href = phantomDeepLink;
-      
-      qrContainer.style.display = "block";
-      qrCanvas.innerHTML = "";
+    const { url } = await response.json();
+    if (!url) throw new Error("No URL returned from backend");
 
-      const canvas = document.createElement("canvas");
-      await QRCode.toCanvas(canvas, url, { width: 300 });
-      qrCanvas.appendChild(canvas);
-      showToast("💘 Scan QR to complete payment", false, true);
+    // ✅ Use Phantom deep link
+    const phantomDeepLink = `https://phantom.app/ul/v1/pay?url=${encodeURIComponent(url)}`;
+    solanaLink.href = phantomDeepLink;
 
-    } catch (err) {
-      console.error(err);
-      showToast("❌ " + err.message, true);
-    }
-  });
+    // ✅ Show animated QR container
+    qrCanvas.innerHTML = "";
+    const canvas = document.createElement("canvas");
+    await QRCode.toCanvas(canvas, url, { width: 300 });
+    qrCanvas.appendChild(canvas);
+
+    qrContainer.style.display = "block";
+    qrContainer.style.opacity = 0;
+    qrContainer.style.transition = "opacity 0.5s ease";
+    requestAnimationFrame(() => {
+      qrContainer.style.opacity = 1;
+    });
+
+    showToast("💘 Scan QR or tap the link to pay with Phantom", false, true);
+  } catch (err) {
+    console.error(err);
+    showToast("❌ " + err.message, true);
+  }
+});
 
   buyButton.addEventListener("click", async () => {
     try {
