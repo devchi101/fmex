@@ -22,9 +22,11 @@ export default async (req, res) => {
 
     const fullUrl = `${baseUrl}?${params.toString()}`;
 
+    console.log("Generated Solana Pay URL:", fullUrl); // ✅ LOG HERE
+
     return res.status(200).json({ url: fullUrl });
   } catch (error) {
-    console.error("URL generation error:", error);
+    console.error("URL generation error:", error); // ✅ Catch & log error
     return res.status(500).json({ error: "Failed to generate URL" });
   }
 };
