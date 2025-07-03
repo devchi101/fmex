@@ -216,9 +216,11 @@ if (!data.url) throw new Error("Failed to generate Solana Pay URL");
       solanaLink.href = url.toString();
 
       const qr = createQR(url, 300, 'white');
-      qrContainer.style.display = "block";
-      qrCanvas.innerHTML = "";           // ✅ clear container
-      qrCanvas.appendChild(qr);         // ✅ append QR div into wrapper
+qrContainer.style.display = "block";
+qrCanvas.innerHTML = "";                  // Clear container
+qr.getElement().style.width = "300px";    // Optional: force width
+qrCanvas.appendChild(qr.getElement());    // ✅ This is an actual DOM Node
+
       showToast("✅ Scan QR to complete payment", false, true);
     } catch (err) {
       console.error(err);
