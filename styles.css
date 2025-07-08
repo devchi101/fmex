@@ -112,6 +112,23 @@ header p {
   transform: scale(1.05);
 }
 
+.buyfmex-button {
+  display: inline-block;
+  margin-top: 1rem;
+  background-color: rgb(14, 163, 76);
+  color: white;
+  border: 3px solid rgb(255, 255, 255);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.buyfmex-button:hover {
+  transform: scale(1.05);
+}
+
 .buy-form {
   margin-top: 2rem;
 }
