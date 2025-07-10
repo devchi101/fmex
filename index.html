@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fuck My Ex Coin ($FMEX)</title>
+  <title>$FMEX</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="/favicon.png" type="image/png" />
 </head>
@@ -33,10 +33,10 @@
 <audio id="bg-music" src="assets/song.mp3" preload="auto" loop></audio>
 
     <header class="header">
-    <div class="logo">💔</div>
+    <div class="logo">💔FMEX</div>
     <div class="header-controls">
       <button id="theme-toggle">🌙</button>
-      <button id="music-toggle" title="Toggle Music">🎵</button>
+      <button id="music-toggle" title="Toggle Music">▶</button>
       <button id="wallet-button">Connect Wallet</button>
     </div>
   </header>
@@ -127,9 +127,9 @@
     <button id="solanaPayButton" class="btn secondary">🟣 Buy $FMEX with Solana Pay</button>
 
     <div id="qr-container" style="margin-top:1rem; display:none; text-align:center;">
-      <p style="color:white; margin-bottom:0.5rem;">Scan QR with Phantom or any Solana wallet:</p>
-      <canvas id="solana-qr"></canvas>
-      <p><a id="solana-link" href="#" target="_blank" style="color:#00e599;">Or click to pay via Solana Pay ↗</a></p>
+      <p style="color:white; margin-bottom:0.5rem;">Scan QR with Phantom or any Solana wallet to pay:</p>
+      <div id="solana-qr" style="display:inline-block;"></div>
+      <p><a id="solana-link" href="#" target="_blank" style="color:#00e599;">Or click to pay on mobile ↗</a></p>
     </div>
 
   </div>
