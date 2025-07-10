@@ -43,7 +43,9 @@
 
   <div class="container">
     <header>
-      <h1>💔Fuck My Ex Token ($FMEX)</h1>
+      <div class="typing-container">
+       <span class="typing-text" id="typingText"></span>
+      </div>
       <p>The only coin born from heartbreak, caffeine, and dangerously poor decisions.</p>
     </header>
 
@@ -69,36 +71,71 @@
       </div>
     </section>
 
-    <section class="buy-form">
- <div class="fmex-card-glow">
-  <h2>💔 Join <span class="highlight">$FMEX</span> Presale Now</h2>
-  <p>🚀 Listing <strong>July 10th</strong> </p>
-  <div class="down-arrow">↓</div>
+    <section class="utility-section"> 
+  <div class="utility-text fade-in-left">
+    <h2>🛠️Token Utility</h2>
+    <p>
+      We're not just memeing for fun – this is a lifestyle. Our mission is to create the biggest, baddest, most heartbreak-fueled meme empire across all social media – one that makes you laugh through the pain, and get rewarded for it.
+    </p>
+    <p>
+      With <span>$FMEX</span>, you’ll be able to:
+    </p>
+    <ul>
+      <li>Stake your tokens to vote for the Meme of the Week, Month, or Year.</li>
+      <li>Earn $FMEX by entering dumb-but-glorious community challenges like:
+        <ul class="sublist">
+          <li>– Best Caption Wins</li>
+          <li>– Funniest Comment of the Week</li>
+          <li>– Most Liked Petty Rant That Made Us Spit Our Coffee</li>
+        </ul>
+      </li>
+    </ul>
   </div>
-  <div class="presale-announce">
-  <p class="fade-in punchline">You gave your ex years... give us 1 SOL</p>
-  <p class="fade-in delay-1 price-info">Presale Price: <strong>$0.00018</strong> | Listing: <strong>$0.0025</strong></p>
-  <p class="fade-in delay-2 countdown-line" id="countdown" style="font-size: 0.85rem;"></p>
-</div>
-    <input type="number" id="solAmount" placeholder="Enter SOL amount (minimum 1)" min="1" step="0.2" />
+
+  <div class="utility-chart fade-in-right">
+    <canvas id="coinChart" width="400" height="400"></canvas>
+  </div>
+</section>
+
+     <section class="buy-section">
+  <!-- Chart Container -->
+  <div class="chart-container">
+    <canvas id="tokenomicsChart" width="400" height="400"></canvas>
+  </div>
+
+  <!-- Buy Form -->
+  <div id="buyform" class="buy-form">
+    <div class="fmex-card-glow">
+      <h2>💔 Join <span class="highlight">$FMEX</span> Presale Now</h2>
+      <p>🚀 Listing <strong>July 10th</strong> </p>
+      <div class="down-arrow">↓</div>
+    </div>
+    <div class="presale-announce">
+      <p class="fade-in punchline">You gave your ex years... give us 1 SOL</p>
+      <p class="fade-in delay-1 price-info">Presale Price: <strong>$0.00018</strong> | Listing: <strong>$0.0025</strong></p>
+      <p class="fade-in delay-2 countdown-line" id="countdown" style="font-size: 0.85rem;"></p>
+    </div>
+
+    <input type="number" id="solAmount" placeholder="Enter SOL amount (min 1)" min="1" step="0.2" />
     <p id="fmexEstimate" style="margin-top: 0.5rem; font-weight: bold;"></p>
-    <button id="buyButton" class="btn primary">Buy with SOLANA</button>
+    <button id="buyButton" class="btn primary">Buy with SOL</button>
+    <p class="status" id="status">💡 Connect Phantom wallet to continue.</p>
+    <p id="confirmationMessage" style="margin-top:1rem;"></p>
     <div class="or-divider">or</div>
 
-    <!-- 💸 Solana Pay Option -->
-    <p class="solana-pay-text">Don’t feel like connecting your wallet? Use <span class="solana-highlight">Solana Pay</span>!</p>
+    <p style="margin:1.2rem 0; font-weight:bold; font-size:1rem; color:#ffd700; text-align:center;">
+      Don’t feel like connecting your wallet? Use <span style="color:#00e599;">Solana Pay</span>!
+    </p>
     <button id="solanaPayButton" class="btn secondary">🟣 Buy $FMEX with Solana Pay</button>
 
     <div id="qr-container" style="margin-top:1rem; display:none; text-align:center;">
-      <p style="color:white; margin-bottom:0.5rem;">Scan QR with Phantom or any Solana wallet to pay:</p>
-      <div id="solana-qr" style="display:inline-block;"></div>
-      <p><a id="solana-link" href="#" target="_blank" style="color:#00e599;">Or click to pay on mobile ↗</a></p>
+      <p style="color:white; margin-bottom:0.5rem;">Scan QR with Phantom or any Solana wallet:</p>
+      <canvas id="solana-qr"></canvas>
+      <p><a id="solana-link" href="#" target="_blank" style="color:#00e599;">Or click to pay via Solana Pay ↗</a></p>
     </div>
 
-    <p id="confirmationMessage" style="margin-top:1rem;"></p>
-  </section>
-
-    
+  </div>
+</section>   
 
     <div class="progress-wrapper">
   <div class="progress-bar">
@@ -106,6 +143,42 @@
   </div>
   <p class="progress-stats">Target: $50,000 | Raised: $10,980.01</p>
  </div>
+
+   <!-- 💬 Confession Wall -->
+<section class="confession-wall">
+  <h2>💬 Confession Wall</h2>
+  <p>Leave an anonymous message to your ex. Let it out.</p>
+  <form id="confession-form">
+    <textarea id="confession-input" placeholder="Write your confession here..." required></textarea>
+    <button id="submit-confession" type="submit" class="btn confess-btn">Submit Confession</button>
+  </form>
+  <ul class="confession-list" id="confession-list">
+    <li>🖤 "I never liked your Spotify playlists anyway."</li>
+    <li>💔 "You taught me red flags are real."</li>
+  </ul>
+</section>
+
+<!-- 🎁 Airdrop Countdown -->
+<section class="airdrop-countdown">
+  <h2>🎁 $FMEX Airdrop Incoming</h2>
+  <p>First 100 buyers over 2 SOL get bonus $FMEX!</p>
+  <div class="airdrop-timer" id="airdrop-timer">⏳ Loading...</div>
+  <a class="buyfmex-button" href="#buyform" target="_blank" onclick="event.stopPropagation();">BUY $FMEX NOW 🚨</a>
+</section>
+
+    <section class="meme-board">
+  <h2 class="meme-title">💔 FMEX Meme Board</h2>
+  <div class="meme-scroll">
+    <div class="meme"><img src="assets/meme1.jpg" alt="FMEX Meme 1" /></div>
+    <div class="meme"><img src="assets/meme2.gif" alt="FMEX Meme 2" /></div>
+    <div class="meme"><img src="assets/meme3.jpg" alt="FMEX Meme 3" /></div>
+    <div class="meme"><img src="assets/meme4.gif" alt="FMEX Meme 4" /></div>
+    <div class="meme"><img src="assets/meme5.png" alt="FMEX Meme 5" /></div>
+    <div class="meme"><img src="assets/meme6.jpg" alt="FMEX Meme 6" /></div>
+    <div class="meme"><img src="assets/meme7.jpg" alt="FMEX Meme 7" /></div>
+    <div class="meme"><img src="assets/meme8.jpg" alt="FMEX Meme 8" /></div>
+  </div>
+</section>
 
     <footer>
   <p>“Because sometimes the only way to heal… is to pump so hard your ex hears about it on Crypto Twitter.”</p>
@@ -324,6 +397,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 </html>
