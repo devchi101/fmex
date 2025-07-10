@@ -246,11 +246,11 @@
   musicBtn.addEventListener("click", () => {
     if (isPlaying) {
       bgMusic.pause();
-      musicBtn.textContent = "🎵";
+      musicBtn.textContent = "▶";
     } else {
       bgMusic.volume = 0.4;
       bgMusic.play().catch(err => console.warn("Playback failed:", err));
-      musicBtn.textContent = "🔇";
+      musicBtn.textContent = "❚❚";
     }
     isPlaying = !isPlaying;
   });
