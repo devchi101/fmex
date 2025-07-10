@@ -70,7 +70,7 @@ const estimateEl = document.getElementById("fmexEstimate");
 
 function updateEstimate() {
   const sol = parseFloat(solInput.value);
-  if (!isNaN(sol) && sol >= 1) {
+  if (!isNaN(sol) && sol >= 0.1) {
     const fmexAmount = sol * 800_000; // 1 SOL = 800,000 FMEX
     estimateEl.textContent = `You’ll receive: ${fmexAmount.toLocaleString()} $FMEX`;
     estimateEl.style.color = "lime";
@@ -295,7 +295,8 @@ window.onload = function () {
 
 const phrases = [
   "💔 F*ck My Ex Coin ($FMEX)",
-  "Turning Heartbreak Into Gains 💰"
+  "Turning Heartbreak Into Gains 💰",
+  "Stake. Meme. Earn. Repeat"
 ];
 
 const typingText = document.getElementById("typingText");
@@ -320,7 +321,7 @@ function type() {
   } else {
     if (!isDeleting) {
       isDeleting = true;
-      speed = 8000; // pause before deleting
+      speed = 2000; // pause before deleting
     } else {
       isDeleting = false;
       phraseIndex = (phraseIndex + 1) % phrases.length;
