@@ -167,25 +167,6 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCountdown();
 });
 
-// Scroll animation for fade-in
-// Scroll animation using Intersection Observer
-const observerOptions = {
-  threshold: 0.1
-};
-
-const observer = new IntersectionObserver((entries, observer) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      observer.unobserve(entry.target); // animate once
-    }
-  });
-}, observerOptions);
-
-document.querySelectorAll('.fade-in-left, .fade-in-right').forEach(el => {
-  observer.observe(el);
-});
-
 // Coin Utility Chart
 const ctx = document.getElementById('coinChart').getContext('2d');
 
