@@ -71,7 +71,7 @@ const estimateEl = document.getElementById("fmexEstimate");
 function updateEstimate() {
   const sol = parseFloat(solInput.value);
   if (!isNaN(sol) && sol >= 0.1) {
-    const fmexAmount = sol * 800_000; // 1 SOL = 800,000 FMEX
+    const fmexAmount = sol * 950_000; // 1 SOL = 950,000 FMEX
     estimateEl.textContent = `You’ll receive: ${fmexAmount.toLocaleString()} $FMEX`;
     estimateEl.style.color = "lime";
   } else {
